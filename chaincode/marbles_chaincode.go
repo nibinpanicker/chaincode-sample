@@ -147,7 +147,13 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 		return t.Write(stub, args)
 	} else if function == "init_marble" {									//create a new marble
 		return t.init_marble(stub, args)
-	} else if function == "create_voucher" {									//create a new marble
+	} else if function == "ISSUED" {									//create a new marble
+		return t.create_voucher(stub, args)
+	} else if function == "RE-ISSUED" {									//create a new marble
+		return t.reissue_voucher(stub, args)
+	} else if function == "USED" {									//create a new marble
+		return t.create_voucher(stub, args)
+	} else if function == "EXPIRED" {									//create a new marble
 		return t.create_voucher(stub, args)
 	} else if function == "set_user" {										//change owner of a marble
 		res, err := t.set_user(stub, args)
@@ -344,13 +350,13 @@ func (t *SimpleChaincode) create_voucher(stub shim.ChaincodeStubInterface, args 
 	}
 
 	id := args[0]
-	desc := strings.ToLower(args[1])
-	memberName := strings.ToLower(args[2])
-	membershipNo := strings.ToLower(args[3])
-	partnerCode := strings.ToLower(args[4])
-	expiry := strings.ToLower(args[5])
-	pointsExpiry := strings.ToLower(args[7])
-	owner := strings.ToLower(args[8])
+	desc := strings.ToUpper(args[1])
+	memberName := strings.ToUpper(args[2])
+	membershipNo := strings.ToUpper(args[3])
+	partnerCode := strings.ToUpper(args[4])
+	expiry := strings.ToUpper(args[5])
+	pointsExpiry := strings.ToUpper(args[7])
+	owner := strings.ToUpper(args[8])
 	//Points must be a number
 	points, err := strconv.Atoi(args[6])
 	if err != nil {
@@ -411,6 +417,38 @@ func (t *SimpleChaincode) set_user(stub shim.ChaincodeStubInterface, args []stri
 	}
 
 	fmt.Println("- end set user")
+	return nil, nil
+}
+
+//Nibin
+func (t *SimpleChaincode) reissue_voucher(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	var err error
+
+	//   0       1
+	// "name", "bob"
+	if len(args) < 2 {
+		return nil, errors.New("Incorrect number of arguments. Expecting 2")
+	}
+
+	fmt.Println("- start reissue_voucher")
+	fmt.Println(args[0] + " - " + args[1])
+	voucherAsBytes, err := stub.GetState(args[0])
+	if err != nil {
+		return nil, errors.New("Failed to get thing")
+	}
+	res := SmartVoucher{}
+	json.Unmarshal(voucherAsBytes, &res)										//un stringify it aka JSON.parse()
+	res.Description = args[1]
+	res.Partner = args[2]
+	res.Expiry = args[3]
+
+	jsonAsBytes, _ := json.Marshal(res)
+	err = stub.PutState(args[0], jsonAsBytes)								//rewrite the marble with id as key
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Println("- end reissue_voucher")
 	return nil, nil
 }
 
