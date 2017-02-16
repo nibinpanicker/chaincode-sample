@@ -363,7 +363,7 @@ func (t *SimpleChaincode) create_voucher(stub shim.ChaincodeStubInterface, args 
 	res := SmartVoucher{}
 	json.Unmarshal(voucherAsBytes, &res)
 	if res.Id == id{
-		fmt.Println("This voucher arleady exists: " + name)
+		fmt.Println("This voucher arleady exists: " + id)
 		fmt.Println(res);
 		return nil, errors.New("This voucher arleady exists")				//all stop a voucher by this id exists
 	}
@@ -375,7 +375,7 @@ func (t *SimpleChaincode) create_voucher(stub shim.ChaincodeStubInterface, args 
 		return nil, err
 	}
 
-	fmt.Println("- end create voucher")
+	fmt.Println("- end create voucher -")
 	return nil, nil
 }
 
