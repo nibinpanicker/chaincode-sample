@@ -147,7 +147,7 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 		return t.init_marble(stub, args)
 	} else if function == "ISSUED" {									//create a new marble
 		return t.create_voucher(stub, args)
-	} else if function == "RE-ISSUED" {									//create a new marble
+	} else if function == "REISSUED" {									//create a new marble
 		return t.reissue_voucher(stub, args)
 	} else if function == "TRANSFERRED" {									//create a new marble
 		return t.transfer_voucher(stub, args)
