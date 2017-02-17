@@ -375,7 +375,7 @@ func (t *SimpleChaincode) create_voucher(stub shim.ChaincodeStubInterface, args 
 	}
 
 	//build the voucher json string manually
-	str := `{"voucherId": "` + id + `", "voucherDesc": "` + desc + `", "issuer": ` + issuer + `, "owner": "` + owner + `, "partner": "` + partner + `, "expiry": "` + expiry + `, "value": "` + strconv.Itoa(value) + `"}`
+	str := `{"voucherId": "` + id + `", "voucherDesc": "` + desc + `", "issuer": "` + issuer + `", "owner": "` + owner + `", "partner": "` + partner + `", "expiry": "` + expiry + `", "value": "` + strconv.Itoa(value) + `"}`
 	err = stub.PutState(id, []byte(str))									//store marble with id as key
 	if err != nil {
 		return nil, err
