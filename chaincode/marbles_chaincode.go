@@ -381,6 +381,19 @@ func (t *SimpleChaincode) create_voucher(stub shim.ChaincodeStubInterface, args 
 		return nil, err
 	}
 
+	marblesAsBytes, err := stub.GetState(marbleIndexStr)
+	if err != nil {
+		return nil, errors.New("Failed to get marble index")
+	}
+	var marbleIndex []string
+	json.Unmarshal(marblesAsBytes, &marbleIndex)							//un stringify it aka JSON.parse()
+
+	//append
+	marbleIndex = append(marbleIndex, id)									//add marble name to index list
+	fmt.Println("! marble index: ", marbleIndex)
+	jsonAsBytes, _ := json.Marshal(marbleIndex)
+	err = stub.PutState(marbleIndexStr, jsonAsBytes)
+
 	fmt.Println("- end create voucher -")
 	return nil, nil
 }
