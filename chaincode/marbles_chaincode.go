@@ -39,14 +39,12 @@ var openTradesStr = "_opentrades"				//name for the key/value that will store al
 
 type SmartVoucher struct {
 	Id string `json:"voucherId"`
-	Description string `json:voucherDesc`
-	MemberName string `json:"memberName"`
-	MembershipAcc string `json:"membershipNo"`
+	Description string `json:"voucherDesc"`
+  Issuer string `json:"issuer"`
+	Owner string `json:"ownerId"`
 	Partner string `json:"partnerCode"`
 	Expiry string `json:"voucherExpiry"`
-	Points string `json:"points"`
-	PointsExpiry string `json:"pointsExpiry"`
-	Owner string `json:"ownerId"`
+  Value string `json:"value"`
 }
 
 type Marble struct{
@@ -151,10 +149,12 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 		return t.create_voucher(stub, args)
 	} else if function == "RE-ISSUED" {									//create a new marble
 		return t.reissue_voucher(stub, args)
+	} else if function == "TRANSFERRED" {									//create a new marble
+		return t.transfer_voucher(stub, args)
 	} else if function == "USED" {									//create a new marble
-		return t.create_voucher(stub, args)
+		return t.transfer_voucher(stub, args)
 	} else if function == "EXPIRED" {									//create a new marble
-		return t.create_voucher(stub, args)
+		return t.expire_voucher(stub, args)
 	} else if function == "set_user" {										//change owner of a marble
 		res, err := t.set_user(stub, args)
 		cleanTrades(stub)													//lets make sure all open trades are still valid
@@ -351,16 +351,14 @@ func (t *SimpleChaincode) create_voucher(stub shim.ChaincodeStubInterface, args 
 
 	id := args[0]
 	desc := strings.ToUpper(args[1])
-	memberName := strings.ToUpper(args[2])
-	membershipNo := strings.ToUpper(args[3])
-	partnerCode := strings.ToUpper(args[4])
+	issuer := strings.ToUpper(args[2])
+	owner := strings.ToUpper(args[3])
+	partner := strings.ToUpper(args[4])
 	expiry := strings.ToUpper(args[5])
-	pointsExpiry := strings.ToUpper(args[7])
-	owner := strings.ToUpper(args[8])
 	//Points must be a number
-	points, err := strconv.Atoi(args[6])
+	value, err := strconv.Atoi(args[6])
 	if err != nil {
-		return nil, errors.New("3rd argument must be a numeric string")
+		return nil, errors.New("7th argument must be a numeric string")
 	}
 
 	//check if voucher already exists
@@ -370,14 +368,14 @@ func (t *SimpleChaincode) create_voucher(stub shim.ChaincodeStubInterface, args 
 	}
 	res := SmartVoucher{}
 	json.Unmarshal(voucherAsBytes, &res)
-	if res.Id == id{
+	if res.Id == id {
 		fmt.Println("This voucher arleady exists: " + id)
 		fmt.Println(res);
 		return nil, errors.New("This voucher arleady exists")				//all stop a voucher by this id exists
 	}
 
 	//build the voucher json string manually
-	str := `{"voucherId": "` + id + `", "voucherDesc": "` + desc + `", "memberName": ` + memberName + `, "membershipNo": "` + membershipNo + `, "partnerCode": "` + partnerCode + `, "voucherExpiry": "` + expiry + `, "points": "` + strconv.Itoa(points) + `, "pointsExpiry": "` + pointsExpiry + `, "ownerId": "` + owner + `"}`
+	str := `{"voucherId": "` + id + `", "voucherDesc": "` + desc + `", "issuer": ` + issuer + `, "owner": "` + owner + `, "partner": "` + partner + `, "expiry": "` + expiry + `, "value": "` + strconv.Itoa(value) + `"}`
 	err = stub.PutState(id, []byte(str))									//store marble with id as key
 	if err != nil {
 		return nil, err
@@ -424,10 +422,8 @@ func (t *SimpleChaincode) set_user(stub shim.ChaincodeStubInterface, args []stri
 func (t *SimpleChaincode) reissue_voucher(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	var err error
 
-	//   0       1
-	// "name", "bob"
-	if len(args) < 2 {
-		return nil, errors.New("Incorrect number of arguments. Expecting 2")
+	if len(args) < 6 {
+		return nil, errors.New("Incorrect number of arguments. Expecting 6")
 	}
 
 	fmt.Println("- start reissue_voucher")
@@ -438,9 +434,12 @@ func (t *SimpleChaincode) reissue_voucher(stub shim.ChaincodeStubInterface, args
 	}
 	res := SmartVoucher{}
 	json.Unmarshal(voucherAsBytes, &res)										//un stringify it aka JSON.parse()
-	res.Description = args[1]
-	res.Partner = args[2]
-	res.Expiry = args[3]
+
+	res.Description := strings.ToUpper(args[1])
+	res.Issuer := strings.ToUpper(args[2])
+	res.Owner := strings.ToUpper(args[3])
+	res.Partner := strings.ToUpper(args[4])
+	res.Expiry := strings.ToUpper(args[5])
 
 	jsonAsBytes, _ := json.Marshal(res)
 	err = stub.PutState(args[0], jsonAsBytes)								//rewrite the marble with id as key
@@ -452,6 +451,51 @@ func (t *SimpleChaincode) reissue_voucher(stub shim.ChaincodeStubInterface, args
 	return nil, nil
 }
 
+func (t *SimpleChaincode) transfer_voucher(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	var err error
+
+	if len(args) < 6 {
+		return nil, errors.New("Incorrect number of arguments. Expecting 6")
+	}
+
+	fmt.Println("- start transfer_voucher")
+	fmt.Println(args[0] + " - " + args[1])
+	voucherAsBytes, err := stub.GetState(args[0])
+	if err != nil {
+		return nil, errors.New("Failed to get thing")
+	}
+	res := SmartVoucher{}
+	json.Unmarshal(voucherAsBytes, &res)										//un stringify it aka JSON.parse()
+
+	res.Description := strings.ToUpper(args[1])
+	res.Issuer := strings.ToUpper(args[2])
+	res.Owner := strings.ToUpper(args[3])
+	res.Partner := strings.ToUpper(args[4])
+	res.Expiry := strings.ToUpper(args[5])
+
+	jsonAsBytes, _ := json.Marshal(res)
+	err = stub.PutState(args[0], jsonAsBytes)								//rewrite the marble with id as key
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Println("- end transfer_voucher")
+	return nil, nil
+}
+
+func (t *SimpleChaincode) expire_voucher(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	if len(args) != 1 {
+		return nil, errors.New("Incorrect number of arguments. Expecting 1")
+	}
+
+	name := args[0]
+	err := stub.DelState(name)													//remove the key from chaincode state
+	if err != nil {
+		return nil, errors.New("Failed to delete state")
+	}
+
+	return nil, nil
+}
 // ============================================================================================================================
 // Open Trade - create an open trade for a marble you want with marbles you have
 // ============================================================================================================================
