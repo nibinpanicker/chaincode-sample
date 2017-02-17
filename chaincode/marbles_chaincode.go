@@ -345,7 +345,7 @@ func (t *SimpleChaincode) init_marble(stub shim.ChaincodeStubInterface, args []s
 func (t *SimpleChaincode) create_voucher(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	var err error
 
-	if len(args) != 9 {
+	if len(args) != 7 {
 		return nil, errors.New("Incorrect number of arguments. Expecting 9")
 	}
 
