@@ -435,11 +435,11 @@ func (t *SimpleChaincode) reissue_voucher(stub shim.ChaincodeStubInterface, args
 	res := SmartVoucher{}
 	json.Unmarshal(voucherAsBytes, &res)										//un stringify it aka JSON.parse()
 
-	res.Description := strings.ToUpper(args[1])
-	res.Issuer := strings.ToUpper(args[2])
-	res.Owner := strings.ToUpper(args[3])
-	res.Partner := strings.ToUpper(args[4])
-	res.Expiry := strings.ToUpper(args[5])
+	res.Description = strings.ToUpper(args[1])
+	res.Issuer = strings.ToUpper(args[2])
+	res.Owner = strings.ToUpper(args[3])
+	res.Partner = strings.ToUpper(args[4])
+	res.Expiry = strings.ToUpper(args[5])
 
 	jsonAsBytes, _ := json.Marshal(res)
 	err = stub.PutState(args[0], jsonAsBytes)								//rewrite the marble with id as key
@@ -467,11 +467,11 @@ func (t *SimpleChaincode) transfer_voucher(stub shim.ChaincodeStubInterface, arg
 	res := SmartVoucher{}
 	json.Unmarshal(voucherAsBytes, &res)										//un stringify it aka JSON.parse()
 
-	res.Description := strings.ToUpper(args[1])
-	res.Issuer := strings.ToUpper(args[2])
-	res.Owner := strings.ToUpper(args[3])
-	res.Partner := strings.ToUpper(args[4])
-	res.Expiry := strings.ToUpper(args[5])
+	res.Description = strings.ToUpper(args[1])
+	res.Issuer = strings.ToUpper(args[2])
+	res.Owner = strings.ToUpper(args[3])
+	res.Partner = strings.ToUpper(args[4])
+	res.Expiry = strings.ToUpper(args[5])
 
 	jsonAsBytes, _ := json.Marshal(res)
 	err = stub.PutState(args[0], jsonAsBytes)								//rewrite the marble with id as key
