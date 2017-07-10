@@ -151,8 +151,8 @@ var ibc = new Ibc1();
 try{
 	//this hard coded list is intentionaly left here, feel free to use it when initially starting out
 	//please create your own network when you are up and running
-	var manual = JSON.parse(fs.readFileSync('mycreds_docker_compose.json', 'utf8'));
-	//var manual = JSON.parse(fs.readFileSync('mycreds_bluemix.json', 'utf8'));
+	//var manual = JSON.parse(fs.readFileSync('mycreds_docker_compose.json', 'utf8'));
+	var manual = JSON.parse(fs.readFileSync('mycreds_bluemix.json', 'utf8'));
 	var peers = manual.credentials.peers;
 	console.log('loading hardcoded peers');
 	var users = null;																			//users are only found if security is on
@@ -215,21 +215,21 @@ function detect_tls_or_not(peer_array){
 // ==================================
 var options = 	{
 					network:{
-						peers: [peers[0]],																	//lets only use the first peer! since we really don't need any more than 1
-						users: prefer_type1_users(users),													//dump the whole thing, sdk will parse for a good one
+						peers: peers, //peers[0]]																//lets only use the first peer! since we really don't need any more than 1
+						users: prefer_type1_users(users), //[users[4]]													//dump the whole thing, sdk will parse for a good one
 						options: {
 									quiet: true, 															//detailed debug messages on/off true/false
-									tls: false, //Nibin											//should app to peer communication use tls?
+									tls: true, //Nibin											//should app to peer communication use tls?
 									maxRetry: 1																//how many times should we retry register before giving up
 								}
 					},
 					chaincode:{
-						zip_url: 'https://github.com/ibm-blockchain/marbles/archive/v2.0.zip',
-						unzip_dir: 'marbles-2.0/chaincode',													//subdirectroy name of chaincode after unzipped
-						git_url: 'http://gopkg.in/ibm-blockchain/marbles.v2/chaincode',						//GO get http url
+						zip_url: 'https://github.com/nibinpanicker/chaincode-sample/archive/master.zip',
+						unzip_dir: 'chaincode-sample-master/chaincode',													//subdirectroy name of chaincode after unzipped
+						git_url: 'http://github.com/nibinpanicker/chaincode-sample/chaincode',						//GO get http url
 
 						//hashed cc name from prev deployment, comment me out to always deploy, uncomment me when its already deployed to skip deploying again
-						deployed_name: '16e655c0fce6a9882896d3d6d11f7dcd4f45027fd4764004440ff1e61340910a9d67685c4bb723272a497f3cf428e6cf6b009618612220e1471e03b6c0aa76cb'
+						//deployed_name: 'a4f67425196d2fc71c9fe133f51ac470a6fb41bb0121080cfeac876ea1c0030a29e1ed3ccf9a5d28df8bfa9ce37c5df1d995a2090d52d8a075a06fce50e899f8'
 					}
 				};
 if(process.env.VCAP_SERVICES){
