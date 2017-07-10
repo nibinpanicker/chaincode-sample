@@ -8,7 +8,7 @@ var bgcolors = ['whitebg', 'blackbg', 'redbg', 'greenbg', 'bluebg', 'purplebg', 
 $(document).on('ready', function() {
 	connect_to_server();
 	$('input[name="name"]').val('r' + randStr(6));
-	
+
 	// =================================================================================
 	// jQuery UI Events
 	// =================================================================================
@@ -32,7 +32,7 @@ $(document).on('ready', function() {
 		}
 		return false;
 	});
-	
+
 	$('#homeLink').click(function(){
 		showHomePanel();
 	});
@@ -41,7 +41,7 @@ $(document).on('ready', function() {
 		$('input[name="name"]').val('r' + randStr(6));
 	});
 
-	
+
 	//marble color picker
 	$(document).on('click', '.colorInput', function(){
 		$('.colorOptionsWrap').hide();											//hide any others
@@ -50,15 +50,15 @@ $(document).on('ready', function() {
 	$(document).on('click', '.colorOption', function(){
 		var color = $(this).attr('color');
 		var html = '<span class="fa fa-circle colorSelected ' + color + '" color="' + color + '"></span>';
-		
+
 		$(this).parent().parent().find('.colorValue').html(html);
 		$(this).parent().hide();
 
 		for(var i in bgcolors) $('.createball').removeClass(bgcolors[i]);			//remove prev color
 		$('.createball').css('border', '0').addClass(color + 'bg');				//set new color
 	});
-	
-	
+
+
 	//drag and drop marble
 	$('#user2wrap, #user1wrap, #trashbin').sortable({connectWith: '.sortable'}).disableSelection();
 	$('#user2wrap').droppable({drop:
@@ -98,8 +98,8 @@ $(document).on('ready', function() {
 			}
 		}
 	});
-	
-	
+
+
 	// =================================================================================
 	// Helper Fun
 	// ================================================================================
@@ -107,10 +107,10 @@ $(document).on('ready', function() {
 	function showHomePanel(){
 		$('#homePanel').fadeIn(300);
 		$('#createPanel').hide();
-		
+
 		var part = window.location.pathname.substring(0,3);
 		window.history.pushState({},'', part + '/home');						//put it in url so we can f5
-		
+
 		console.log('getting new balls');
 		setTimeout(function(){
 			$('#user1wrap').html('');											//reset the panel
@@ -119,7 +119,7 @@ $(document).on('ready', function() {
 			ws.send(JSON.stringify({type: 'chainstats', v: 1}));
 		}, 1000);
 	}
-	
+
 	//transfer selected ball to user
 	function transfer(marbleName, user){
 		if(marbleName){
@@ -153,14 +153,14 @@ function connect_to_server(){
 	function connect(){
 		var wsUri = 'ws://' + document.location.hostname + ':' + document.location.port;
 		console.log('Connectiong to websocket', wsUri);
-		
+
 		ws = new WebSocket(wsUri);
 		ws.onopen = function(evt) { onOpen(evt); };
 		ws.onclose = function(evt) { onClose(evt); };
 		ws.onmessage = function(evt) { onMessage(evt); };
 		ws.onerror = function(evt) { onError(evt); };
 	}
-	
+
 	function onOpen(evt){
 		console.log('WS CONNECTED');
 		connected = true;
@@ -222,16 +222,16 @@ function build_ball(data){
 	var html = '';
 	var colorClass = '';
 	var size = 'fa-5x';
-	
+
 	data.name = escapeHtml(data.name);
 	data.color = escapeHtml(data.color);
 	data.user = escapeHtml(data.user);
-	
+
 	console.log('got a marble: ', data.color);
 	if(!$('#' + data.name).length){								//only populate if it doesn't exists
 		if(data.size == 16) size = 'fa-3x';
 		if(data.color) colorClass = data.color.toLowerCase();
-		
+
 		html += '<span id="' + data.name + '" class="fa fa-circle ' + size + ' ball ' + colorClass + ' title="' + data.name + '" user="' + data.user + '"></span>';
 		if(data.user && data.user.toLowerCase() == bag.setup.USER1){
 			$('#user1wrap').append(html);

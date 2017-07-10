@@ -1,0 +1,37 @@
+#managePanel(hidden).panel
+	h1 Manage Voucher
+	hr
+
+	#manageVoucherInnerWrap
+
+		form(action="/manage" method="POST")#manageform
+			legend
+				br
+			legend
+				input(type="text" name="searchVoucherId" placeholder="Voucher Id")
+				button(type="button")#searchVoucher
+					span.fa.fa-check &nbsp;&nbsp;
+					span Search
+				span &nbsp;
+				button(type="button")#reissue
+					span.fa.fa-check &nbsp;&nbsp;
+					span Re-Issue
+				span &nbsp;
+				button(type="button")#clearManageVoucher
+					&nbsp;&nbsp;
+					span Clear
+			br
+			div#showVoucher
+			br
+			legend
+				select(name="partner")
+					option(value="00" disabled="disabled" selected="selected") Partner
+					option(value="Air Canada") Air Canada
+					option(value="Air New Zealand") Air New Zealand
+					option(value="Air India") Air India
+					option(value="Avianca") Avianca
+					option(value="Lufthansa") Lufthansa
+					option(value="Singapore Airlines") Singapore Airlines
+				button(type="button")#markAsUsed
+					span.fa.fa-check &nbsp;&nbsp;
+					span Mark As Used

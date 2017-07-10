@@ -11,6 +11,7 @@ module.exports.setup = function(sdk, cc){
 };
 
 module.exports.process_msg = function(ws, data){
+	console.log('request type '+ data.type);
 	if(data.v === 1){																						//only look at messages for part 1
 		if(data.type == 'create'){
 			console.log('its a create!');
@@ -37,6 +38,18 @@ module.exports.process_msg = function(ws, data){
 		else if(data.type == 'chainstats'){
 			console.log('chainstats msg');
 			ibc.chain_stats(cb_chainstats);
+		}
+		else if(data.type == 'ISSUED'){
+			console.log('issuing voucher');
+			chaincode.invoke.ISSUED([data.voucherId, data.voucherType, data.issuer, data.owner, data.partner, data.expiry, data.value], cb_invoked);	//create a new marble
+		}
+		else if(data.type == 'RE-ISSUED'){
+			console.log('re-issuing voucher');
+			chaincode.invoke.REISSUED([data.voucherId, data.voucherType, data.issuer, data.owner, data.partner, data.expiry, data.value], cb_invoked);	//create a new marble
+		}
+		else if(data.type == 'USED'){
+			console.log('marking as used the voucher');
+			chaincode.invoke.USED([data.voucherId, data.voucherType, data.issuer, data.owner, data.partner, data.expiry, data.value], cb_invoked);	//create a new marble
 		}
 	}
 
@@ -68,11 +81,11 @@ module.exports.process_msg = function(ws, data){
 			}
 		}
 	}
-	
+
 	function cb_invoked(e, a){
 		console.log('response: ', e, a);
 	}
-	
+
 	//call back for getting the blockchain stats, lets get the block stats now
 	function cb_chainstats(e, chain_stats){
 		if(chain_stats && chain_stats.height){
@@ -80,7 +93,7 @@ module.exports.process_msg = function(ws, data){
 			var list = [];
 			for(var i = chain_stats.height; i >= 1; i--){								//create a list of heights we need
 				list.push(i);
-				if(list.length >= 8) break;
+				if(list.length >= 50) break;
 			}
 			list.reverse();																//flip it so order is correct in UI
 			async.eachLimit(list, 1, function(block_height, cb) {						//iter through each one, and send it
@@ -95,7 +108,7 @@ module.exports.process_msg = function(ws, data){
 			});
 		}
 	}
-	
+
 	//send a message, socket might be closed...
 	function sendMsg(json){
 		if(ws){

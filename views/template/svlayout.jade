@@ -36,10 +36,11 @@ html
 				//Tab Navigation, show the corresponding panel
 				$(".nav").click(function(){
 					var show = $(this).html().trim().toLowerCase();
+					console.log('show -> ' + show);
 					showPanel(show);
 				});
 				function showPanel(show){
-					if(show == '') show = 'home';										//default
+					if(show == '') show = 'view';										//default
 					var part = window.location.pathname.substring(0,3);
 					window.history.pushState({},'', part + '/' + show);					//put it in url so we can f5
 
@@ -74,7 +75,7 @@ html
 
 				$(".backToHome").click(function(){
 					$(".panel").hide();
-					$("#homePanel").show();
+					$("#svHomePanel").show();
 					$("#notificationPanel").animate({width:'toggle'});
 				});
 

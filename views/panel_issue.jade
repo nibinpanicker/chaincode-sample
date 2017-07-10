@@ -1,0 +1,47 @@
+#issuePanel(hidden).panel
+	h1 Issue Voucher
+	hr
+
+	#issueVoucherInnerWrap
+
+		form(action="/issue" method="POST")#issueform
+			legend
+				span.hint &nbsp;&nbsp; All fields are mandatory
+				br
+				br
+				select(name="issuer")
+					option(value="Miles & More" selected="selected") Miles & More
+					option(value="Miles + Bonus") Miles + Bonus
+					option(value="Aeroplan") Aeroplan
+					option(value="Phoenix Miles") Phoenix Miles
+					option(value="Flying Returns") Flying Returns
+					option(value="Airpoints") Airpoints
+				span.hint &nbsp;&nbsp;Issuer
+			br
+			legend
+				input(type="text" name="voucherId" placeholder="Voucher Id")
+				span.hint &nbsp;&nbsp;Voucher Id
+			br
+			legend
+				input(type="text" name="owner" placeholder="Beneficiary" value="")
+				span.hint &nbsp;&nbsp;Beneficiary
+			br
+			legend
+				select(name="voucherType")
+					option(value="00" disabled="disabled" selected="selected") Voucher Type
+					option(value="SA_E2B_UPGRADE") Economy to Business Upgrade
+					option(value="SA_B2F_UPGRADE") Business to First Class Upgrade
+					option(value="SA_LOUNGE_ACCESS") Lounge Access
+					option(value="SA_EXTRA_LUGGAGE") 20 Kg Extra Luggage
+			br
+			legend
+				input(type="text" name="expiry" placeholder="Expiry")
+				span.hint &nbsp;&nbsp;Expires On
+			br
+			legend
+				input(type="text" name="value" placeholder="Value")
+				span.hint &nbsp;&nbsp;Value
+			br
+			button(type="button")#issue
+				span.fa.fa-check &nbsp;&nbsp;
+				span CONFIRM

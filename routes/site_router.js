@@ -3,7 +3,7 @@
 /*******************************************************************************
  * Copyright (c) 2015 IBM Corp.
  *
- * All rights reserved. 
+ * All rights reserved.
  *
  * Contributors:
  *   David Huffman - Initial implementation
@@ -26,17 +26,24 @@ function build_bag(){
 // Home
 // ============================================================================================================================
 router.route('/').get(function(req, res){
-	res.redirect('/p1');
+	res.redirect('/sv');
 });
 
 // ============================================================================================================================
 // Part 1
 // ============================================================================================================================
 router.route('/p1').get(function(req, res){
-	res.render('part1', {title: 'Marbles Part 1', bag: build_bag()});
+	res.render('part1', {title: 'Smart Vouchers', bag: build_bag()});
 });
 router.route('/p1/:page?').get(function(req, res){
-	res.render('part1', {title: 'Marbles Part 1', bag: build_bag()});
+	res.render('part1', {title: 'Smart Vouchers', bag: build_bag()});
+});
+
+router.route('/sv').get(function(req, res){
+	res.render('sv', {title: 'Smart Vouchers', bag: build_bag()});
+});
+router.route('/sv/:page?').get(function(req, res){
+	res.render('sv', {title: 'Smart Vouchers', bag: build_bag()});
 });
 
 // ============================================================================================================================

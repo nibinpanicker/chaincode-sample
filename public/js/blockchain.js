@@ -17,7 +17,7 @@ $(document).on('ready', function() {
 	$(document).on('mouseover', '.block', function(event){
 		show_details(event, Number($(this).html()));
 	});
-	
+
 	$(document).on('mouseleave', '#blockWrap', function(){
 		if(!clicked) $('#details').fadeOut();
 	});
@@ -44,13 +44,13 @@ function new_block(newblck){									//rec a new block
 		if(!last) last = 0;
 		last++;
 		//console.log('last', last, Number(newblck.id));
-		if(block > 0){											//never fake blocks on an initial load
+		/*if(block > 0){											//never fake blocks on an initial load
 			for(var i=last; i < Number(newblck.id); i++){		//build fake blocks for ones we missed out on
 				console.log('run?');
 				blocks[Number(i)] = newblck;
 				build_block(i);
 			}
-		}
+		}*/
 		blocks[Number(newblck.id)] = newblck;
 		build_block(newblck.id);								//build block
 	}
@@ -66,7 +66,7 @@ function build_block(id){										//build and append the block html
 }
 
 function move_on_down(){										//move the blocks left
-	if(block > 10){
+	if(block > 50){
 		$('.block:first').animate({opacity: 0}, 800, function(){$('.block:first').remove();});
 		$('.block').animate({left: '-=36'}, 800, function(){});
 		block--;
@@ -97,8 +97,10 @@ function formatType(i){											//spell out deploy or invoke
 }
 
 function formatPayload(str, ccid){								//create a sllliiiggghhhtttlllllyyy better payload name from decoded payload
-	var func = ['init', 'delete', 'write', 'init_marble', 'set_user', 'open_trade', 'perform_trade', 'remove_trade'];
-	str =  str.substring(str.indexOf(ccid) + ccid.length + 4);
+	var func = ['init', 'delete', 'write', 'init_marble', 'set_user', 'open_trade', 'perform_trade', 'remove_trade', 'REISSUED', 'ISSUED', 'TRANSFERRED', 'USED','EXPIRED'];
+	if(ccid != undefined) {
+		str =  str.substring(str.indexOf(ccid) + ccid.length + 4);
+	}
 	for(var i in func){
 		if(str.indexOf(func[i]) >= 0){
 			return func[i] + ': ' + str.substr(func[i].length);

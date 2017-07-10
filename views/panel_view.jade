@@ -1,0 +1,29 @@
+#viewPanel.panel
+	div
+		h1 View Vouchers
+		hr
+
+		form(action="/sv/view" method="POST")#listform
+			legend
+				input(type="text" name="voucher" placeholder="Voucher Id, Issuer")
+				button(type="button")#submitListReq
+					span.fa.fa-check &nbsp;&nbsp;
+					span Search
+				span &nbsp;
+				button(type="button")#submitClear
+					&nbsp;&nbsp;
+					span Clear
+		br
+		div
+			table
+				thead
+					tr
+						th Txn No
+						th Voucher Info
+						th Issuer
+						th Partner
+						th Beneficiary
+						th Status
+						th Expiry
+						th Last Txn Time
+				tbody#listBody

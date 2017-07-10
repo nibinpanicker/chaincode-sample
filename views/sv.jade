@@ -1,0 +1,36 @@
+extends ./template/svlayout.jade
+
+
+// --------------- Header -------------- //
+block custom_header
+	script(src='/js/part1.js?v=#{bag.jshash}')
+	script(src='/js/sv.js?v=#{bag.jshash')
+	script(type='text/javascript').
+		$(document).ready(function() {
+
+
+		});
+
+
+// --------------- Navigation Bar  -------------- //
+block navpanel
+	include ./template/nav_sv.jade
+
+
+// --------------- Main Stuff  -------------- //
+block content
+	#contentPanel
+
+		#blockdate(title="date of last block") loading...
+
+		// --------------- SV Home Panel
+		include ./panel_view.jade
+
+		// --------------- SV Issue Panel
+		include ./panel_issue.jade
+
+		// --------------- SV Manage Panel
+		include ./panel_manage.jade
+
+block footer
+	include ./template/blockchain.jade
