@@ -39,12 +39,14 @@ var openTradesStr = "_opentrades"				//name for the key/value that will store al
 
 type SmartVoucher struct {
 	Id string `json:"voucherId"`
-	Description string `json:"voucherDesc"`
-  Issuer string `json:"issuer"`
-	Owner string `json:"ownerId"`
+	Description string `json:voucherDesc`
+	MemberName string `json:"memberName"`
+	MembershipAcc string `json:"membershipNo"`
 	Partner string `json:"partnerCode"`
 	Expiry string `json:"voucherExpiry"`
-  Value string `json:"value"`
+	Points string `json:"points"`
+	PointsExpiry string `json:"pointsExpiry"`
+	Owner string `json:"ownerId"`
 }
 
 type Marble struct{
@@ -345,20 +347,22 @@ func (t *SimpleChaincode) init_marble(stub shim.ChaincodeStubInterface, args []s
 func (t *SimpleChaincode) create_voucher(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	var err error
 
-	if len(args) != 7 {
+	if len(args) != 9 {
 		return nil, errors.New("Incorrect number of arguments. Expecting 9")
 	}
 
 	id := args[0]
-	desc := strings.ToUpper(args[1])
-	issuer := strings.ToUpper(args[2])
-	owner := strings.ToUpper(args[3])
-	partner := strings.ToUpper(args[4])
-	expiry := strings.ToUpper(args[5])
+	desc := strings.ToLower(args[1])
+	memberName := strings.ToLower(args[2])
+	membershipNo := strings.ToLower(args[3])
+	partnerCode := strings.ToLower(args[4])
+	expiry := strings.ToLower(args[5])
+	pointsExpiry := strings.ToLower(args[7])
+	owner := strings.ToLower(args[8])
 	//Points must be a number
-	value, err := strconv.Atoi(args[6])
+	points, err := strconv.Atoi(args[6])
 	if err != nil {
-		return nil, errors.New("7th argument must be a numeric string")
+		return nil, errors.New("3rd argument must be a numeric string")
 	}
 
 	//check if voucher already exists
@@ -368,33 +372,20 @@ func (t *SimpleChaincode) create_voucher(stub shim.ChaincodeStubInterface, args 
 	}
 	res := SmartVoucher{}
 	json.Unmarshal(voucherAsBytes, &res)
-	if res.Id == id {
-		fmt.Println("This voucher arleady exists: " + id)
+	if res.Id == id{
+		fmt.Println("This voucher arleady exists: " + name)
 		fmt.Println(res);
 		return nil, errors.New("This voucher arleady exists")				//all stop a voucher by this id exists
 	}
 
 	//build the voucher json string manually
-	str := `{"voucherId": "` + id + `", "voucherDesc": "` + desc + `", "issuer": "` + issuer + `", "owner": "` + owner + `", "partner": "` + partner + `", "expiry": "` + expiry + `", "value": "` + strconv.Itoa(value) + `"}`
+	str := `{"voucherId": "` + id + `", "voucherDesc": "` + desc + `", "memberName": ` + memberName + `, "membershipNo": "` + membershipNo + `, "partnerCode": "` + partnerCode + `, "voucherExpiry": "` + expiry + `, "points": "` + strconv.Itoa(points) + `, "pointsExpiry": "` + pointsExpiry + `, "ownerId": "` + owner + `"}`
 	err = stub.PutState(id, []byte(str))									//store marble with id as key
 	if err != nil {
 		return nil, err
 	}
 
-	marblesAsBytes, err := stub.GetState(marbleIndexStr)
-	if err != nil {
-		return nil, errors.New("Failed to get marble index")
-	}
-	var marbleIndex []string
-	json.Unmarshal(marblesAsBytes, &marbleIndex)							//un stringify it aka JSON.parse()
-
-	//append
-	marbleIndex = append(marbleIndex, id)									//add marble name to index list
-	fmt.Println("! marble index: ", marbleIndex)
-	jsonAsBytes, _ := json.Marshal(marbleIndex)
-	err = stub.PutState(marbleIndexStr, jsonAsBytes)
-
-	fmt.Println("- end create voucher -")
+	fmt.Println("- end create voucher")
 	return nil, nil
 }
 
